@@ -1,0 +1,38 @@
+{
+  "name": "coding_agent",
+  "description": "Code patterns and project conventions",
+  "memories": [
+    {
+      "query": "How do we run tests in this project?",
+      "response": "Run `pytest` from the project root. Use `pytest tests -v` for verbose output.",
+      "type": "workflow",
+      "scope": "project",
+      "tags": ["testing", "dev"]
+    },
+    {
+      "query": "What Python version do we use?",
+      "response": "Python 3.11+ is required. See pyproject.toml for the exact constraint.",
+      "type": "fact",
+      "scope": "project",
+      "tags": ["python"]
+    }
+  ],
+  "cases": [
+    {
+      "query": "How do we run tests in this project?",
+      "expected_action": "replay"
+    },
+    {
+      "query": "How can I run the test suite?",
+      "expected_action": "restore"
+    },
+    {
+      "query": "Which Python version is required?",
+      "expected_action": "verify"
+    },
+    {
+      "query": "Deploy to production steps",
+      "expected_action": "none"
+    }
+  ]
+}

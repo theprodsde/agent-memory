@@ -1,0 +1,42 @@
+{
+  "name": "customer_support",
+  "description": "Password reset and billing FAQ scenarios",
+  "memories": [
+    {
+      "query": "How do I reset my password?",
+      "response": "Go to Settings → Security → Reset Password and follow the email link.",
+      "type": "conversation",
+      "scope": "user",
+      "tags": ["auth", "faq"]
+    },
+    {
+      "query": "What is the refund policy?",
+      "response": "Full refunds within 30 days of purchase. Contact support with your order ID.",
+      "type": "fact",
+      "scope": "global",
+      "tags": ["billing"]
+    }
+  ],
+  "cases": [
+    {
+      "query": "How do I reset my password?",
+      "expected_action": "replay",
+      "notes": "Exact prior question"
+    },
+    {
+      "query": "I forgot my password, what should I do?",
+      "expected_action": "restore",
+      "notes": "Paraphrased auth question"
+    },
+    {
+      "query": "Can I get a refund after 2 weeks?",
+      "expected_action": "verify",
+      "notes": "Fact-type memory may need validation"
+    },
+    {
+      "query": "What's the weather in Tokyo?",
+      "expected_action": "none",
+      "notes": "Unrelated query"
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  agent-memory:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: agent-memory:latest
+    container_name: agent-memory
+    volumes:
+      - agent_memory_data:/home/appuser/.agent_memory
+    environment:
+      - AGENT_MEMORY_DIR=/home/appuser/.agent_memory
+    # For MCP server mode, uncomment:
+    # ports:
+    #   - "8000:8000"
+    # command: agent-memory-mcp
+    command: --help
+
+  agent-memory-mcp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: agent-memory:latest
+    container_name: agent-memory-mcp
+    volumes:
+      - agent_memory_data:/home/appuser/.agent_memory
+    environment:
+      - AGENT_MEMORY_DIR=/home/appuser/.agent_memory
+      - AGENT_MEMORY_COLLECTION=agent_memories
+    ports:
+      - "8000:8000"
+    command: agent-memory-mcp
+
+volumes:
+  agent_memory_data:
+    driver: local

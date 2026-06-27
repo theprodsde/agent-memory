@@ -1,0 +1,38 @@
+{
+  "name": "research_agent",
+  "description": "Research summaries and source citations",
+  "memories": [
+    {
+      "query": "Summarize the 2024 transformer efficiency paper",
+      "response": "The paper proposes sparse attention routing reducing FLOPs by 40% with minimal accuracy loss on benchmark tasks.",
+      "type": "summary",
+      "scope": "workspace",
+      "tags": ["ml", "research"]
+    },
+    {
+      "query": "Key finding on RAG retrieval quality",
+      "response": "Hybrid BM25 + dense retrieval outperforms either method alone by 12-18% on QA benchmarks.",
+      "type": "document",
+      "scope": "workspace",
+      "tags": ["rag"]
+    }
+  ],
+  "cases": [
+    {
+      "query": "Summarize the 2024 transformer efficiency paper",
+      "expected_action": "replay"
+    },
+    {
+      "query": "What did the transformer efficiency paper conclude?",
+      "expected_action": "restore"
+    },
+    {
+      "query": "Does hybrid retrieval help RAG?",
+      "expected_action": "restore"
+    },
+    {
+      "query": "Stock price of Apple today",
+      "expected_action": "none"
+    }
+  ]
+}
