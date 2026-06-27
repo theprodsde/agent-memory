@@ -1,5 +1,5 @@
 # Multi-stage Docker build for agent-memory
-FROM python:3.11-slim as builder
+FROM python:3.11-slim AS builder
 
 # Install build dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -18,7 +18,7 @@ COPY mcp_server/ ./mcp_server/
 RUN pip install --no-cache-dir -e ".[dev]"
 
 # Runtime stage
-FROM python:3.11-slim as runtime
+FROM python:3.11-slim AS runtime
 
 # Install runtime dependencies only
 RUN apt-get update && apt-get install -y --no-install-recommends \
