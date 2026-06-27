@@ -4,13 +4,12 @@ build-backend = "hatchling.build"
 
 [project]
 name = "agent-memory"
-version = "0.3.0"
+version = "0.1.0-alpha"
 description = "Persistent semantic memory for AI agents with replay, restore, verify, and ignore decisions"
 readme = "README.md"
 requires-python = ">=3.10"
 license = "MIT"
 dependencies = [
-    "chromadb>=0.5.0",
     "mcp>=1.0.0",
     "pydantic>=2.0.0",
     "rank-bm25>=0.2.2",
@@ -20,6 +19,12 @@ dependencies = [
 dev = [
     "pytest>=8.0.0",
     "pytest-asyncio>=0.24.0",
+    "ruff>=0.5.0",
+    "mypy>=1.10.0",
+    "black>=24.0.0",
+]
+chromadb = [
+    "chromadb>=0.5.0",
 ]
 
 [project.scripts]
@@ -32,3 +37,15 @@ packages = ["agent_memory", "mcp_server"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 asyncio_mode = "auto"
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+select = ["E", "F", "I", "UP", "W"]
+ignore = ["E501"]
+
+[tool.mypy]
+python_version = "3.10"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true

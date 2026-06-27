@@ -14,8 +14,8 @@ COPY pyproject.toml README.md ./
 COPY agent_memory/ ./agent_memory/
 COPY mcp_server/ ./mcp_server/
 
-# Install only runtime dependencies (no dev dependencies)
-RUN pip install --no-cache-dir -e .
+# Install runtime dependencies including chromadb
+RUN pip install --no-cache-dir -e ".[chromadb]"
 
 # Runtime stage - use slim for pip availability, but keep it minimal
 FROM python:3.11-slim AS runtime

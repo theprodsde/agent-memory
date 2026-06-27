@@ -14,6 +14,7 @@ from agent_memory.models import (
     RetrievalResult,
 )
 from agent_memory.policy import DecisionPolicy, DefaultPolicy
+from agent_memory.sqlite_store import SqliteMemoryStore
 
 __all__ = [
     "BenchmarkResult",
@@ -31,6 +32,7 @@ __all__ = [
     "MemoryState",
     "MemoryType",
     "RetrievalResult",
+    "SqliteMemoryStore",
     "format_benchmark_report",
     "format_eval_report",
     "run_benchmark",
@@ -38,4 +40,4 @@ __all__ = [
     "run_eval_suite",
 ]
 
-__version__ = "0.3.0"
+__version__ = "0.1.0-alpha"

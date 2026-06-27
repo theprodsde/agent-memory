@@ -13,8 +13,12 @@ def _default_datasets_dir() -> Path:
     return Path(__file__).resolve().parent.parent / "benchmarks" / "datasets"
 
 
+def _create_memory(args: argparse.Namespace) -> Memory:
+    return Memory(persist_dir=args.data_dir, backend=args.backend)
+
+
 def cmd_remember(args: argparse.Namespace) -> int:
-    memory = Memory(persist_dir=args.data_dir)
+    memory = _create_memory(args)
     entry = memory.remember(
         args.query,
         args.response,
@@ -27,7 +31,7 @@ def cmd_remember(args: argparse.Namespace) -> int:
 
 
 def cmd_resolve(args: argparse.Namespace) -> int:
-    memory = Memory(persist_dir=args.data_dir)
+    memory = _create_memory(args)
     decision = memory.resolve(args.query)
     print(decision)
     if args.explain:
@@ -37,7 +41,7 @@ def cmd_resolve(args: argparse.Namespace) -> int:
 
 
 def cmd_stats(args: argparse.Namespace) -> int:
-    memory = Memory(persist_dir=args.data_dir)
+    memory = _create_memory(args)
     stats = memory.stats()
     print("Agent Memory Stats")
     print("==================")
@@ -47,14 +51,14 @@ def cmd_stats(args: argparse.Namespace) -> int:
 
 
 def cmd_cleanup(args: argparse.Namespace) -> int:
-    memory = Memory(persist_dir=args.data_dir)
+    memory = _create_memory(args)
     result = memory.cleanup(delete=args.delete)
     print(result)
     return 0
 
 
 def cmd_benchmark(args: argparse.Namespace) -> int:
-    memory = Memory(persist_dir=args.data_dir)
+    memory = _create_memory(args)
 
     if args.seed:
         for dataset_path in _default_datasets_dir().glob("*.json"):
@@ -102,6 +106,12 @@ def build_parser() -> argparse.ArgumentParser:
         "--data-dir",
         default=".agent_memory",
         help="Persistence directory (default: .agent_memory)",
+    )
+    parser.add_argument(
+        "--backend",
+        choices=["sqlite", "chromadb"],
+        default="sqlite",
+        help="Storage backend (default: sqlite)",
     )
 
     sub = parser.add_subparsers(dest="command", required=True)

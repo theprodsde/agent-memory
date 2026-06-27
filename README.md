@@ -403,7 +403,7 @@ agent-memory eval --datasets ./benchmarks/datasets
 
 ---
 
-## 📈 Current Status (v0.3.0)
+## 📈 Current Status (v0.1.0-alpha)
 
 ### ✅ Implemented
 - Hybrid retrieval (BM25 + Vector + RRF fusion)
@@ -422,14 +422,14 @@ agent-memory eval --datasets ./benchmarks/datasets
 
 | Feature | Status | ETA |
 |---------|--------|-----|
-| Async API | 📋 Planned | v0.4.0 |
-| SQLite backend | 🚧 In Progress | v0.4.0 |
-| Redis backend | 📋 Planned | v0.4.0 |
-| Postgres backend | 📋 Planned | v0.5.0 |
-| FastAPI server + dashboard | 📋 Planned | v0.5.0 |
-| Memory graph | 📋 Planned | v0.6.0 |
-| Confidence learning | 📋 Planned | v0.6.0 |
-| Multi-agent support | 📋 Planned | v0.7.0 |
+| Async API | ✅ Completed | v0.1.0-alpha |
+| SQLite backend | ✅ Completed | v0.1.0-alpha |
+| Redis backend | 📋 Planned | v0.2.0 |
+| Postgres backend | 📋 Planned | v0.3.0 |
+| FastAPI server + dashboard | 📋 Planned | v0.3.0 |
+| Memory graph | 📋 Planned | v0.4.0 |
+| Confidence learning | 📋 Planned | v0.4.0 |
+| Multi-agent support | 📋 Planned | v0.5.0 |
 
 ---
 

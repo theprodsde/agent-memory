@@ -1,13 +1,22 @@
 from __future__ import annotations
 
+import asyncio
 from pathlib import Path
 
 from agent_memory.decision import DecisionEngine
 from agent_memory.models import MemoryDecision, MemoryEntry, MemoryScope, MemoryState, MemoryType
 from agent_memory.policy import DecisionPolicy, DefaultPolicy
 from agent_memory.retriever import MemoryRetriever
-from agent_memory.store import MemoryStore
+from agent_memory.sqlite_store import SqliteMemoryStore
 from agent_memory.ttl import parse_ttl
+
+# Optional ChromaDB import
+try:
+    from agent_memory.store import MemoryStore
+    CHROMADB_AVAILABLE = True
+except ImportError:
+    MemoryStore = None  # type: ignore
+    CHROMADB_AVAILABLE = False
 
 
 class Memory:
@@ -21,8 +30,19 @@ class Memory:
         replay_threshold: float = 0.85,
         restore_threshold: float = 0.70,
         verify_threshold: float = 0.80,
+        backend: str = "sqlite",  # "chromadb" or "sqlite"
     ) -> None:
-        self.store = MemoryStore(persist_dir=persist_dir, collection_name=collection_name)
+        if backend == "sqlite":
+            self.store = SqliteMemoryStore(persist_dir=persist_dir, collection_name=collection_name)
+        elif backend == "chromadb":
+            if not CHROMADB_AVAILABLE:
+                raise ImportError(
+                    "ChromaDB backend requires 'chromadb' package. "
+                    "Install with: pip install agent-memory[chromadb]"
+                )
+            self.store = MemoryStore(persist_dir=persist_dir, collection_name=collection_name)
+        else:
+            raise ValueError(f"Unknown backend: {backend}. Use 'sqlite' or 'chromadb'")
         self._policy = policy or DefaultPolicy()
         self.retriever = MemoryRetriever(self.store, policy=self._policy)
         self.decision_engine = DecisionEngine(
@@ -64,6 +84,35 @@ class Memory:
         entry.refresh_state()
         return self.store.store(entry)
 
+    async def aremember(
+        self,
+        query: str,
+        response: str,
+        *,
+        content: str | None = None,
+        type: MemoryType | str = MemoryType.CONVERSATION,
+        scope: MemoryScope | str = MemoryScope.USER,
+        metadata: dict | None = None,
+        tags: list[str] | None = None,
+        confidence: float = 1.0,
+        requires_verification: bool = False,
+        ttl: str | int | float | None = None,
+    ) -> MemoryEntry:
+        """Async version of remember()."""
+        return await asyncio.to_thread(
+            self.remember,
+            query,
+            response,
+            content=content,
+            type=type,
+            scope=scope,
+            metadata=metadata,
+            tags=tags,
+            confidence=confidence,
+            requires_verification=requires_verification,
+            ttl=ttl,
+        )
+
     def resolve(
         self,
         query: str,
@@ -81,6 +130,25 @@ class Memory:
             mode=mode,
             top_k=top_k,
             scopes=scopes,
+            enable_verify=enable_verify,
+        )
+
+    async def aresolve(
+        self,
+        query: str,
+        *,
+        mode: str = "auto",
+        top_k: int = 3,
+        scope: list[MemoryScope | str] | None = None,
+        enable_verify: bool = True,
+    ) -> MemoryDecision:
+        """Async version of resolve()."""
+        return await asyncio.to_thread(
+            self.resolve,
+            query,
+            mode=mode,
+            top_k=top_k,
+            scope=scope,
             enable_verify=enable_verify,
         )
 
@@ -103,11 +171,38 @@ class Memory:
             memory_type=memory_type,
         )
 
+    async def alist(
+        self,
+        limit: int = 100,
+        offset: int = 0,
+        *,
+        scope: list[MemoryScope | str] | None = None,
+        include_archived: bool = False,
+        type: MemoryType | str | None = None,
+    ) -> list[MemoryEntry]:
+        """Async version of list()."""
+        return await asyncio.to_thread(
+            self.list,
+            limit=limit,
+            offset=offset,
+            scope=scope,
+            include_archived=include_archived,
+            type=type,
+        )
+
     def get(self, memory_id: str) -> MemoryEntry | None:
         return self.store.get(memory_id)
 
+    async def aget(self, memory_id: str) -> MemoryEntry | None:
+        """Async version of get()."""
+        return await asyncio.to_thread(self.get, memory_id)
+
     def forget(self, memory_id: str) -> bool:
         return self.store.delete(memory_id)
+
+    async def aforget(self, memory_id: str) -> bool:
+        """Async version of forget()."""
+        return await asyncio.to_thread(self.forget, memory_id)
 
     def archive(self, memory_id: str) -> MemoryEntry | None:
         entry = self.store.get(memory_id)
@@ -116,6 +211,10 @@ class Memory:
         entry.archived = True
         entry.refresh_state()
         return self.store.update(entry)
+
+    async def aarchive(self, memory_id: str) -> MemoryEntry | None:
+        """Async version of archive()."""
+        return await asyncio.to_thread(self.archive, memory_id)
 
     def cleanup(self, *, delete: bool = False) -> dict[str, int]:
         """
@@ -142,6 +241,10 @@ class Memory:
 
         return {"expired": expired_count, "deleted": deleted_count}
 
+    async def acleanup(self, *, delete: bool = False) -> dict[str, int]:
+        """Async version of cleanup()."""
+        return await asyncio.to_thread(self.cleanup, delete=delete)
+
     def stats(self) -> dict:
         """Return aggregate memory and usage statistics."""
         entries = self.store.list_all(limit=10_000, include_archived=True, include_expired=True)
@@ -161,6 +264,10 @@ class Memory:
             "by_type": by_type,
             "total_access_count": total_access,
         }
+
+    async def astats(self) -> dict:
+        """Async version of stats()."""
+        return await asyncio.to_thread(self.stats)
 
     def consolidate(self, similarity_threshold: float = 0.95) -> list[MemoryEntry]:
         """
@@ -209,6 +316,10 @@ class Memory:
             created.append(summary)
 
         return created
+
+    async def aconsolidate(self, similarity_threshold: float = 0.95) -> list[MemoryEntry]:
+        """Async version of consolidate()."""
+        return await asyncio.to_thread(self.consolidate, similarity_threshold=similarity_threshold)
 
     def format_restore_context(self, decision: MemoryDecision) -> str:
         if not decision.context:
