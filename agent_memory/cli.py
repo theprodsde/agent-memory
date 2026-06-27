@@ -6,7 +6,7 @@ from pathlib import Path
 
 from agent_memory import Memory
 from agent_memory.benchmark import format_benchmark_report, run_benchmark
-from agent_memory.eval import EvalDataset, format_eval_report, run_eval, run_eval_suite, seed_dataset
+from agent_memory.eval import EvalDataset, format_eval_report, run_eval_suite, seed_dataset
 
 
 def _default_datasets_dir() -> Path:

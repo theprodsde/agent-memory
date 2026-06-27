@@ -32,10 +32,10 @@ flowchart TD
     C -->|Needs validation| F[✅ Verify: Validate before reuse]
     C -->|No match| G[❌ None: Answer from scratch]
     
-    style D fill:#e1f5fe
-    style E fill:#fff3e0
-    style F fill:#e8f5e9
-    style G fill:#ffebee
+    style D fill:#0d47a1,color:#ffffff
+    style E fill:#e65100,color:#ffffff
+    style F fill:#1b5e20,color:#ffffff
+    style G fill:#b71c1c,color:#ffffff
 ```
 
 **Benefits:**
@@ -90,11 +90,11 @@ flowchart LR
     Engine --> Verify
     Engine --> None
     
-    style Input fill:#f3e5f5
-    style Retrieval fill:#e3f2fd
-    style Decision fill:#fff3e0
-    style Storage fill:#e8f5e9
-    style Output fill:#fce4ec
+    style Input fill:#4a148c,color:#ffffff
+    style Retrieval fill:#0d47a1,color:#ffffff
+    style Decision fill:#e65100,color:#ffffff
+    style Storage fill:#1b5e20,color:#ffffff
+    style Output fill:#b71c1c,color:#ffffff
 ```
 
 ### How It Works
@@ -131,10 +131,10 @@ flowchart TD
     D --> E[Policy Reranking]
     E --> F[Top K Results]
     
-    style B fill:#fff9c4
-    style C fill:#c8e6c9
-    style D fill:#bbdefb
-    style E fill:#ffccbc
+    style B fill:#f57f17,color:#ffffff
+    style C fill:#2e7d32,color:#ffffff
+    style D fill:#1565c0,color:#ffffff
+    style E fill:#6a1b9a,color:#ffffff
 ```
 
 **Policy scoring considers:**
