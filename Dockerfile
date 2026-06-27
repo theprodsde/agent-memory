@@ -14,29 +14,35 @@ COPY pyproject.toml README.md ./
 COPY agent_memory/ ./agent_memory/
 COPY mcp_server/ ./mcp_server/
 
-# Install package in development mode
-RUN pip install --no-cache-dir -e ".[dev]"
+# Install only runtime dependencies (no dev dependencies)
+RUN pip install --no-cache-dir -e .
 
-# Runtime stage
+# Runtime stage - use slim for pip availability, but keep it minimal
 FROM python:3.11-slim AS runtime
 
 # Install runtime dependencies only
 RUN apt-get update && apt-get install -y --no-install-recommends \
+    libstdc++6 \
     && rm -rf /var/lib/apt/lists/*
 
 # Create non-root user
 RUN useradd --create-home --shell /bin/bash appuser
 
-# Set working directory
-WORKDIR /app
+# Set working directory to user's home directory
+WORKDIR /home/appuser
 
-# Copy installed packages from builder
+# Copy installed packages from builder (only runtime deps)
 COPY --from=builder /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
 COPY --from=builder /usr/local/bin /usr/local/bin
 
-# Copy source code
+# Copy source code and install in runtime (without dev dependencies)
 COPY --from=builder /app/agent_memory ./agent_memory
 COPY --from=builder /app/mcp_server ./mcp_server
+COPY --from=builder /app/pyproject.toml ./pyproject.toml
+COPY --from=builder /app/README.md ./README.md
+
+# Install package in runtime (without dev dependencies)
+RUN pip install --no-cache-dir --no-deps -e .
 
 # Create data directory for persistence
 RUN mkdir -p /home/appuser/.agent_memory && chown -R appuser:appuser /home/appuser
@@ -51,7 +57,3 @@ EXPOSE 8000
 
 # Set entrypoint
 ENTRYPOINT ["agent-memory"]
-
-# Default command
-ENTRYPOINT ["agent-memory"]
-CMD ["--help"]
