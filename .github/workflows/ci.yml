@@ -81,9 +81,9 @@ jobs:
 
       - name: Test Docker image
         run: |
-          docker run --rm agent-memory:latest agent-memory --help
-          docker run --rm -v agent_memory_data:/root/.agent_memory agent-memory:latest agent-memory remember "test" "test response"
-          docker run --rm -v agent_memory_data:/root/.agent_memory agent-memory:latest agent-memory resolve "test"
+          docker run --rm agent-memory:latest --help
+          docker run --rm -v agent_memory_data:/root/.agent_memory agent-memory:latest remember "test" "test response"
+          docker run --rm -v agent_memory_data:/root/.agent_memory agent-memory:latest resolve "test"
 
   publish:
     runs-on: ubuntu-latest

@@ -49,6 +49,9 @@ ENV AGENT_MEMORY_DIR=/home/appuser/.agent_memory
 # Expose MCP server port (if needed)
 EXPOSE 8000
 
+# Set entrypoint
+ENTRYPOINT ["agent-memory"]
+
 # Default command
 ENTRYPOINT ["agent-memory"]
 CMD ["--help"]
