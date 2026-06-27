@@ -18,3 +18,7 @@ venv/
 .pytest_cache/
 dist/
 build/
+
+.agent_memory/
+.agent_memory_demo/
+.pytest_cache/
