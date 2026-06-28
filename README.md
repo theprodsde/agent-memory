@@ -3,7 +3,7 @@
 [![CI](https://github.com/TheProdSDE/agent-memory/actions/workflows/ci.yml/badge.svg)](https://github.com/TheProdSDE/agent-memory/actions)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](https://opensource.org/licenses/MIT)
-[![PyPI version](https://img.shields.io/pypi/v/agent-memory-sdk.svg)](https://pypi.org/project/agent-memory-sdk/)
+[![PyPI version](https://img.shields.io/pypi/v/agent-memory.svg)](https://pypi.org/project/agent-memory/)
 
 **Persistent semantic memory for AI agents with intelligent decision-making.**
 
@@ -194,7 +194,7 @@ print(decision.explain())  # Detailed score breakdown
 
 ```bash
 # From PyPI
-pip install agent-memory-sdk
+pip install agent-memory
 
 # From source (development)
 git clone https://github.com/TheProdSDE/agent-memory.git
@@ -430,7 +430,7 @@ When you push a tag matching `v*` (e.g., `v0.1.3`, `v1.0.0`, `v2.0.0-beta.1`):
 
 | Artifact | Location |
 |----------|----------|
-| **PyPI Package** | `pip install agent-memory-sdk==0.1.3` |
+| **PyPI Package** | `pip install agent-memory==0.1.3` |
 | **GitHub Release** | https://github.com/theprodsde/agent-memory/releases/tag/v0.1.3 |
 | **Docker Image** | `ghcr.io/theprodsde/agent-memory:v0.1.3` (if configured) |
 | **Source Archives** | Auto-attached to GitHub Release |
@@ -479,7 +479,7 @@ git tag -d v0.1.3
 git push origin --delete v0.1.3
 
 # Note: PyPI packages CANNOT be deleted, only yanked
-# twine yank agent-memory-sdk 0.1.3
+# twine yank agent-memory 0.1.3
 ```
 
 ---
