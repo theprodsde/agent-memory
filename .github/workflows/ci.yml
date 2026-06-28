@@ -84,7 +84,7 @@ jobs:
           
           # Generate a valid PEP 440 version
           if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
-            # For tags, use the tag name (strip 'v' prefix if present)
+            # For tags, use the tag name (strip 'v' prefix if present) - clean version for PyPI
             VERSION=${GITHUB_REF_NAME#v}
           elif [[ "${GITHUB_REF_NAME}" == "main" ]]; then
             # For main branch, use a dev version with commit SHA (PEP 440 compliant)
@@ -132,7 +132,9 @@ jobs:
 
       - name: Build package
         run: |
-          python -m build
+          # For tag releases, use clean version without local identifier
+          VERSION=${GITHUB_REF_NAME#v}
+          SETUPTOOLS_SCM_PRETEND_VERSION=${VERSION} python -m build
 
       - name: Publish to PyPI
         env:

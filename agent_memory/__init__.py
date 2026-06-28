@@ -16,6 +16,11 @@ from agent_memory.models import (
 from agent_memory.policy import DecisionPolicy, DefaultPolicy
 from agent_memory.sqlite_store import SqliteMemoryStore
 
+try:
+    from agent_memory._version import __version__
+except ImportError:
+    __version__ = "0.0.0"
+
 __all__ = [
     "BenchmarkResult",
     "DecisionEngine",
@@ -39,5 +44,3 @@ __all__ = [
     "run_eval",
     "run_eval_suite",
 ]
-
-__version__ = "0.1.0-alpha"
