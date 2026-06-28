@@ -20,6 +20,9 @@ COPY mcp_server/ ./mcp_server/
 # Set version for hatch-vcs (since .git is not available in build context)
 ENV SETUPTOOLS_SCM_PRETEND_VERSION_FOR_AGENT_MEMORY=${VERSION}
 
+# Debug: print version
+RUN echo "Building version: ${VERSION}"
+
 # Install runtime dependencies including chromadb
 RUN pip install --no-cache-dir -e ".[chromadb]"
 
