@@ -9,6 +9,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     gcc \
     && rm -rf /var/lib/apt/lists/*
 
+# Install build backend dependencies (required for --no-build-isolation)
+RUN pip install --no-cache-dir hatchling hatch-vcs
+
 # Set working directory
 WORKDIR /app
 
@@ -18,16 +21,22 @@ COPY agent_memory/ ./agent_memory/
 COPY mcp_server/ ./mcp_server/
 
 # Set version for hatch-vcs (since .git is not available in build context)
-ENV SETUPTOOLS_SCM_PRETEND_VERSION_FOR_AGENT_MEMORY=${VERSION}
+ENV SETUPTOOLS_SCM_PRETEND_VERSION=${VERSION}
 
 # Debug: print version
-RUN echo "Building version: ${VERSION}"
+RUN echo "Building version: ${VERSION}" && echo "SETUPTOOLS_SCM_PRETEND_VERSION=${SETUPTOOLS_SCM_PRETEND_VERSION}"
 
 # Install runtime dependencies including chromadb (without editable to avoid VCS version detection)
-RUN pip install --no-cache-dir --no-build-isolation ".[chromadb]"
+RUN SETUPTOOLS_SCM_PRETEND_VERSION=${VERSION} pip install --no-cache-dir --no-build-isolation ".[chromadb]"
 
 # Runtime stage - use slim for pip availability, but keep it minimal
 FROM python:3.11-slim AS runtime
+
+# Build argument for version (passed from CI)
+ARG VERSION=0.0.0
+
+# Set version for hatch-vcs in runtime stage too
+ENV SETUPTOOLS_SCM_PRETEND_VERSION=${VERSION}
 
 # Install runtime dependencies only
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -50,8 +59,8 @@ COPY --from=builder /app/mcp_server ./mcp_server
 COPY --from=builder /app/pyproject.toml ./pyproject.toml
 COPY --from=builder /app/README.md ./README.md
 
-# Install package in runtime (without dev dependencies)
-RUN pip install --no-cache-dir --no-deps --no-build-isolation .
+# Install package in runtime (without dev dependencies, with build isolation for build backend)
+RUN SETUPTOOLS_SCM_PRETEND_VERSION=${VERSION} pip install --no-cache-dir --no-deps .
 
 # Create data directory for persistence
 RUN mkdir -p /home/appuser/.agent_memory && chown -R appuser:appuser /home/appuser
