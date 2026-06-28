@@ -77,7 +77,8 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -t agent-memory:latest .
+          VERSION=${GITHUB_REF_NAME#v}
+          docker build --build-arg VERSION=$VERSION -t agent-memory:latest .
 
       - name: Test Docker image with SQLite backend
         run: |

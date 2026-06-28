@@ -1,4 +1,5 @@
 # Multi-stage Docker build for agent-memory
+ARG VERSION
 FROM python:3.11-slim AS builder
 
 # Install build dependencies
@@ -13,6 +14,9 @@ WORKDIR /app
 COPY pyproject.toml README.md ./
 COPY agent_memory/ ./agent_memory/
 COPY mcp_server/ ./mcp_server/
+
+# Set version for hatch-vcs (since .git is not available in build context)
+ENV SETUPTOOLS_SCM_PRETEND_VERSION_FOR_AGENT_MEMORY=${VERSION}
 
 # Install runtime dependencies including chromadb
 RUN pip install --no-cache-dir -e ".[chromadb]"
