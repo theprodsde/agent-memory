@@ -19,7 +19,6 @@ def _tokenize(text: str) -> list[str]:
 
 class MemoryStore(ABC):
     """Abstract base class for memory storage backends.
-    
     This defines the common interface that all memory store implementations
     must follow, enabling interchangeability between backends (ChromaDB, SQLite, etc.)
     while maintaining SOLID principles - specifically the Liskov Substitution Principle

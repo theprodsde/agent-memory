@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from agent_memory.models import MemoryAction, MemoryDecision, RetrievalResult
-from agent_memory.policy import DefaultPolicy, DecisionPolicy
+from agent_memory.policy import DecisionPolicy, DefaultPolicy
 
 
 def build_score_breakdown(

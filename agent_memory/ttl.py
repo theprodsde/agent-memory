@@ -3,7 +3,6 @@ from __future__ import annotations
 import re
 from datetime import datetime, timedelta, timezone
 
-
 _TTL_PATTERN = re.compile(r"^(\d+)([dhms])$", re.IGNORECASE)
 
 

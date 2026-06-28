@@ -3,7 +3,6 @@ from __future__ import annotations
 import json
 import re
 import sqlite3
-from abc import ABC, abstractmethod
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -194,7 +193,7 @@ class SqliteMemoryStore(MemoryStore):
         bm25 = BM25Okapi(corpus)
         scores = bm25.get_scores(_tokenize(query))
         max_score = max(scores) if len(scores) else 1.0
-        
+
         # If BM25 finds matches, use those
         if max_score > 0:
             ranked = sorted(
@@ -203,32 +202,32 @@ class SqliteMemoryStore(MemoryStore):
                 reverse=True,
             )[:top_k]
             return [(entry, float(score / max_score)) for entry, score in ranked if score > 0]
-        
+
         # Fallback: simple token overlap search for partial matches
         # Filter out common stop words
         stop_words = {'what', 'is', 'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by', 'from', 'as', 'are', 'was', 'were', 'be', 'been', 'being', 'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would', 'could', 'should', 'may', 'might', 'must', 'can', 'this', 'that', 'these', 'those', 'i', 'you', 'he', 'she', 'it', 'we', 'they', 'me', 'him', 'her', 'us', 'them', 'my', 'your', 'his', 'its', 'our', 'their', 'mine', 'yours', 'hers', 'ours', 'theirs'}
-        
+
         query_tokens = set(_tokenize(query)) - stop_words
         if not query_tokens:
             return []
-        
+
         matches = []
         for entry in entries:
             doc_text = self._search_document(entry).lower()
             doc_tokens = set(_tokenize(doc_text)) - stop_words
-            
+
             # Check for significant token overlap (at least 1 meaningful token)
             overlap = len(query_tokens & doc_tokens)
             if overlap > 0:
                 # Score based on token overlap ratio
                 score = overlap / max(len(query_tokens), 1)
                 matches.append((entry, score))
-        
+
         if matches:
             matches.sort(key=lambda x: x[1], reverse=True)
             max_match_score = matches[0][1]
             return [(entry, float(score / max_match_score)) for entry, score in matches[:top_k]]
-        
+
         return []
 
     def keyword_search(
@@ -281,7 +280,6 @@ class SqliteMemoryStore(MemoryStore):
         include_expired: bool = False,
     ) -> list[MemoryEntry]:
         filtered = []
-        now = datetime.now(timezone.utc)
         for entry in entries:
             entry.refresh_state()
             if not include_archived and entry.archived:

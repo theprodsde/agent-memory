@@ -135,7 +135,7 @@ def list_memories(
 
 
 @mcp.tool()
-def get_memory(memory_id: str) -> str:
+def get_memory_by_id(memory_id: str) -> str:
     """Fetch a single memory by ID."""
     memory = get_memory()
     entry = memory.get(memory_id)
