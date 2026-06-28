@@ -74,12 +74,27 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Need full history for version detection
 
       - name: Build Docker image
         run: |
           echo "GITHUB_REF_NAME=${GITHUB_REF_NAME}"
           echo "GITHUB_REF=${GITHUB_REF}"
-          VERSION=${GITHUB_REF_NAME#v}
+          
+          # Generate a valid PEP 440 version
+          if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
+            # For tags, use the tag name (strip 'v' prefix if present)
+            VERSION=${GITHUB_REF_NAME#v}
+          elif [[ "${GITHUB_REF_NAME}" == "main" ]]; then
+            # For main branch, use a dev version with commit SHA (PEP 440 compliant)
+            VERSION="0.0.0.dev0+$(git rev-parse --short HEAD)"
+          else
+            # For other branches, use branch name sanitized + commit SHA (PEP 440 compliant)
+            BRANCH=$(echo "${GITHUB_REF_NAME}" | sed 's/[^a-zA-Z0-9]/-/g')
+            VERSION="0.0.0.dev0+${BRANCH}.$(git rev-parse --short HEAD)"
+          fi
+          
           echo "VERSION=${VERSION}"
           docker build --build-arg VERSION="${VERSION}" -t agent-memory:latest .
 
