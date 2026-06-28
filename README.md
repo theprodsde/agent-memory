@@ -3,7 +3,7 @@
 [![CI](https://github.com/TheProdSDE/agent-memory/actions/workflows/ci.yml/badge.svg)](https://github.com/TheProdSDE/agent-memory/actions)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](https://opensource.org/licenses/MIT)
-[![PyPI version](https://img.shields.io/pypi/v/agent-memory.svg)](https://pypi.org/project/agent-memory/)
+[![PyPI version](https://img.shields.io/pypi/v/agent-memory-sdk.svg)](https://pypi.org/project/agent-memory-sdk/)
 
 **Persistent semantic memory for AI agents with intelligent decision-making.**
 
@@ -194,7 +194,7 @@ print(decision.explain())  # Detailed score breakdown
 
 ```bash
 # From PyPI
-pip install agent-memory
+pip install agent-memory-sdk
 
 # From source (development)
 git clone https://github.com/TheProdSDE/agent-memory.git
@@ -403,7 +403,88 @@ agent-memory eval --datasets ./benchmarks/datasets
 
 ---
 
-## 📈 Current Status (v0.1.0-alpha)
+## � Release Process
+
+### How Releases Work
+
+The project uses **automated CI/CD** via GitHub Actions. Releases are triggered by **pushing a version tag**:
+
+```bash
+# Create and push a version tag (triggers full release pipeline)
+git tag v0.1.3
+git push origin v0.1.3
+```
+
+### What Happens on Tag Push
+
+When you push a tag matching `v*` (e.g., `v0.1.3`, `v1.0.0`, `v2.0.0-beta.1`):
+
+| Step | Description |
+|------|-------------|
+| 1️⃣ **Test** | Runs tests on Python 3.10, 3.11, 3.12, 3.13 |
+| 2️⃣ **Benchmark** | Runs performance benchmarks |
+| 3️⃣ **Docker** | Builds and tests multi-stage Docker image |
+| 4️⃣ **Publish** | Builds package → Publishes to PyPI → Creates GitHub Release |
+
+### Release Artifacts Created
+
+| Artifact | Location |
+|----------|----------|
+| **PyPI Package** | `pip install agent-memory-sdk==0.1.3` |
+| **GitHub Release** | https://github.com/theprodsde/agent-memory/releases/tag/v0.1.3 |
+| **Docker Image** | `ghcr.io/theprodsde/agent-memory:v0.1.3` (if configured) |
+| **Source Archives** | Auto-attached to GitHub Release |
+
+### Version Format
+
+Use **Semantic Versioning** with optional pre-release suffixes:
+- `v1.0.0` - Stable release
+- `v1.0.1` - Patch release
+- `v1.1.0` - Minor release
+- `v2.0.0` - Major release
+- `v1.0.0-alpha.1` - Alpha pre-release
+- `v1.0.0-beta.2` - Beta pre-release
+- `v1.0.0-rc.1` - Release candidate
+
+### Prerequisites
+
+1. **PyPI Token** - Stored as `PYPI_API_TOKEN` in GitHub repository secrets
+2. **GitHub Token** - Automatically provided as `GITHUB_TOKEN`
+3. **Branch Protection** - Recommended: require PR reviews before merging to main
+
+### Manual Release (if needed)
+
+```bash
+# 1. Ensure you're on main with latest changes
+git checkout main
+git pull origin main
+
+# 2. Create version tag
+git tag v0.1.3
+
+# 3. Push tag (triggers CI/CD)
+git push origin v0.1.3
+
+# 4. Monitor workflow
+# https://github.com/theprodsde/agent-memory/actions
+```
+
+### Rollback / Delete Release
+
+```bash
+# Delete local tag
+git tag -d v0.1.3
+
+# Delete remote tag (also deletes GitHub Release)
+git push origin --delete v0.1.3
+
+# Note: PyPI packages CANNOT be deleted, only yanked
+# twine yank agent-memory-sdk 0.1.3
+```
+
+---
+
+## 📈 Current Status (v0.1.2)
 
 ### ✅ Implemented
 - Hybrid retrieval (BM25 + Vector + RRF fusion)
