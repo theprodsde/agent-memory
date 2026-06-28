@@ -1,6 +1,8 @@
 # Multi-stage Docker build for agent-memory
-ARG VERSION=0.0.0
 FROM python:3.11-slim AS builder
+
+# Build argument for version (passed from CI)
+ARG VERSION=0.0.0
 
 # Install build dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
