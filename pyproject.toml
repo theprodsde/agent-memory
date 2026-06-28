@@ -1,10 +1,9 @@
 [build-system]
-requires = ["hatchling"]
+requires = ["hatchling", "hatch-vcs"]
 build-backend = "hatchling.build"
 
 [project]
 name = "agent-memory"
-version = "0.1.0-alpha"
 description = "Persistent semantic memory for AI agents with replay, restore, verify, and ignore decisions"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -15,6 +14,7 @@ dependencies = [
     "rank-bm25>=0.2.2",
     "chromadb>=0.5.0",
 ]
+dynamic = ["version"]
 
 [project.optional-dependencies]
 dev = [
@@ -32,6 +32,9 @@ agent-memory-mcp = "mcp_server.server:main"
 [tool.hatch.build.targets.wheel]
 packages = ["agent_memory", "mcp_server"]
 
+[tool.hatch.version]
+source = "vcs"
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 asyncio_mode = "auto"
@@ -39,6 +42,8 @@ asyncio_mode = "auto"
 [tool.ruff]
 line-length = 100
 target-version = "py310"
+
+[tool.ruff.lint]
 select = ["E", "F", "I", "UP", "W"]
 ignore = ["E501"]
 

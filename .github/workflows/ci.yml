@@ -97,6 +97,7 @@ jobs:
     permissions:
       contents: read
       packages: write
+      id-token: write
 
     steps:
       - uses: actions/checkout@v4
@@ -118,5 +119,14 @@ jobs:
         env:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
+        run: |
+          twine upload dist/*
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           twine upload dist/*
