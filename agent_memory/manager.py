@@ -8,15 +8,8 @@ from agent_memory.models import MemoryDecision, MemoryEntry, MemoryScope, Memory
 from agent_memory.policy import DecisionPolicy, DefaultPolicy
 from agent_memory.retriever import MemoryRetriever
 from agent_memory.sqlite_store import SqliteMemoryStore
+from agent_memory.store import ChromaDBStore, MemoryStore
 from agent_memory.ttl import parse_ttl
-
-# Optional ChromaDB import
-try:
-    from agent_memory.store import MemoryStore
-    CHROMADB_AVAILABLE = True
-except ImportError:
-    MemoryStore = None  # type: ignore
-    CHROMADB_AVAILABLE = False
 
 
 class Memory:
@@ -32,15 +25,11 @@ class Memory:
         verify_threshold: float = 0.80,
         backend: str = "sqlite",  # "chromadb" or "sqlite"
     ) -> None:
+        self.store: MemoryStore
         if backend == "sqlite":
             self.store = SqliteMemoryStore(persist_dir=persist_dir, collection_name=collection_name)
         elif backend == "chromadb":
-            if not CHROMADB_AVAILABLE:
-                raise ImportError(
-                    "ChromaDB backend requires 'chromadb' package. "
-                    "Install with: pip install agent-memory[chromadb]"
-                )
-            self.store = MemoryStore(persist_dir=persist_dir, collection_name=collection_name)
+            self.store = ChromaDBStore(persist_dir=persist_dir, collection_name=collection_name)
         else:
             raise ValueError(f"Unknown backend: {backend}. Use 'sqlite' or 'chromadb'")
         self._policy = policy or DefaultPolicy()

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import re
+from abc import ABC, abstractmethod
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -16,7 +17,83 @@ def _tokenize(text: str) -> list[str]:
     return re.findall(r"\w+", text.lower())
 
 
-class MemoryStore:
+class MemoryStore(ABC):
+    """Abstract base class for memory storage backends.
+    
+    This defines the common interface that all memory store implementations
+    must follow, enabling interchangeability between backends (ChromaDB, SQLite, etc.)
+    while maintaining SOLID principles - specifically the Liskov Substitution Principle
+    and Dependency Inversion Principle.
+    """
+
+    @abstractmethod
+    def store(self, entry: MemoryEntry) -> MemoryEntry:
+        """Store a memory entry."""
+        ...
+
+    @abstractmethod
+    def get(self, memory_id: str) -> MemoryEntry | None:
+        """Retrieve a memory entry by ID."""
+        ...
+
+    @abstractmethod
+    def update(self, entry: MemoryEntry) -> MemoryEntry:
+        """Update an existing memory entry."""
+        ...
+
+    @abstractmethod
+    def delete(self, memory_id: str) -> bool:
+        """Delete a memory entry by ID. Returns True if deleted."""
+        ...
+
+    @abstractmethod
+    def list_all(
+        self,
+        limit: int = 100,
+        offset: int = 0,
+        *,
+        scopes: list[MemoryScope] | None = None,
+        include_archived: bool = False,
+        include_expired: bool = False,
+        memory_type: MemoryType | None = None,
+    ) -> list[MemoryEntry]:
+        """List memory entries with optional filtering."""
+        ...
+
+    @abstractmethod
+    def search(
+        self,
+        query: str,
+        top_k: int = 5,
+        *,
+        scopes: list[MemoryScope] | None = None,
+        include_archived: bool = False,
+        include_expired: bool = False,
+    ) -> list[tuple[MemoryEntry, float]]:
+        """Search memories using semantic/vector similarity."""
+        ...
+
+    @abstractmethod
+    def keyword_search(
+        self,
+        query: str,
+        top_k: int = 5,
+        *,
+        scopes: list[MemoryScope] | None = None,
+        include_archived: bool = False,
+        include_expired: bool = False,
+    ) -> list[tuple[MemoryEntry, float]]:
+        """Search memories using keyword/BM25 matching."""
+        ...
+
+    @property
+    @abstractmethod
+    def count(self) -> int:
+        """Return the total number of stored memories."""
+        ...
+
+
+class ChromaDBStore(MemoryStore):
     """ChromaDB-backed persistent memory storage with scope filtering."""
 
     def __init__(

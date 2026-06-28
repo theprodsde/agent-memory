@@ -107,14 +107,16 @@ def build_parser() -> argparse.ArgumentParser:
         default=".agent_memory",
         help="Persistence directory (default: .agent_memory)",
     )
-    parser.add_argument(
-        "--backend",
-        choices=["sqlite", "chromadb"],
-        default="sqlite",
-        help="Storage backend (default: sqlite)",
-    )
 
     sub = parser.add_subparsers(dest="command", required=True)
+
+    def add_common_args(subparser: argparse.ArgumentParser) -> None:
+        subparser.add_argument(
+            "--backend",
+            choices=["sqlite", "chromadb"],
+            default="sqlite",
+            help="Storage backend (default: sqlite)",
+        )
 
     remember = sub.add_parser("remember", help="Store a memory")
     remember.add_argument("query")
@@ -122,18 +124,22 @@ def build_parser() -> argparse.ArgumentParser:
     remember.add_argument("--type", default="conversation")
     remember.add_argument("--scope", default="user")
     remember.add_argument("--ttl", default=None)
+    add_common_args(remember)
     remember.set_defaults(func=cmd_remember)
 
     resolve = sub.add_parser("resolve", help="Resolve a query against memory")
     resolve.add_argument("query")
     resolve.add_argument("--explain", action="store_true", help="Print score breakdown")
+    add_common_args(resolve)
     resolve.set_defaults(func=cmd_resolve)
 
     stats = sub.add_parser("stats", help="Show memory statistics")
+    add_common_args(stats)
     stats.set_defaults(func=cmd_stats)
 
     cleanup = sub.add_parser("cleanup", help="Expire or delete stale memories")
     cleanup.add_argument("--delete", action="store_true", help="Delete expired memories")
+    add_common_args(cleanup)
     cleanup.set_defaults(func=cmd_cleanup)
 
     benchmark = sub.add_parser("benchmark", help="Run latency and hit-rate benchmark")
@@ -141,10 +147,12 @@ def build_parser() -> argparse.ArgumentParser:
     benchmark.add_argument("--seed", action="store_true", help="Seed from eval datasets first")
     benchmark.add_argument("--repeat", type=int, default=1, help="Repeat each query N times")
     benchmark.add_argument("--baseline-ms", type=float, default=800.0, help="No-memory baseline ms")
+    add_common_args(benchmark)
     benchmark.set_defaults(func=cmd_benchmark)
 
     eval_cmd = sub.add_parser("eval", help="Run evaluation datasets")
     eval_cmd.add_argument("--datasets", default=None, help="Path to datasets directory")
+    add_common_args(eval_cmd)
     eval_cmd.set_defaults(func=cmd_eval)
 
     return parser

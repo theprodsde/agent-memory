@@ -3,18 +3,20 @@ from __future__ import annotations
 import json
 import re
 import sqlite3
+from abc import ABC, abstractmethod
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
 from agent_memory.models import MemoryEntry, MemoryScope, MemoryState, MemoryType
+from agent_memory.store import MemoryStore
 
 
 def _tokenize(text: str) -> list[str]:
     return re.findall(r"\w+", text.lower())
 
 
-class SqliteMemoryStore:
+class SqliteMemoryStore(MemoryStore):
     """SQLite-backed persistent memory storage with scope filtering and BM25 keyword search."""
 
     def __init__(

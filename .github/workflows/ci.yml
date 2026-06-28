@@ -79,11 +79,16 @@ jobs:
         run: |
           docker build -t agent-memory:latest .
 
-      - name: Test Docker image
+      - name: Test Docker image with SQLite backend
         run: |
           docker run --rm agent-memory:latest --help
           docker run --rm -v agent_memory_data:/home/appuser/.agent_memory agent-memory:latest remember "test" "test response"
           docker run --rm -v agent_memory_data:/home/appuser/.agent_memory agent-memory:latest resolve "test"
+
+      - name: Test Docker image with ChromaDB backend
+        run: |
+          docker run --rm -v agent_memory_chromadb:/home/appuser/.agent_memory agent-memory:latest remember "test" "test response" --backend chromadb
+          docker run --rm -v agent_memory_chromadb:/home/appuser/.agent_memory agent-memory:latest resolve "test" --backend chromadb
 
   publish:
     runs-on: ubuntu-latest
