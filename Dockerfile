@@ -23,8 +23,8 @@ ENV SETUPTOOLS_SCM_PRETEND_VERSION_FOR_AGENT_MEMORY=${VERSION}
 # Debug: print version
 RUN echo "Building version: ${VERSION}"
 
-# Install runtime dependencies including chromadb
-RUN pip install --no-cache-dir -e ".[chromadb]"
+# Install runtime dependencies including chromadb (without editable to avoid VCS version detection)
+RUN pip install --no-cache-dir --no-build-isolation ".[chromadb]"
 
 # Runtime stage - use slim for pip availability, but keep it minimal
 FROM python:3.11-slim AS runtime
@@ -51,7 +51,7 @@ COPY --from=builder /app/pyproject.toml ./pyproject.toml
 COPY --from=builder /app/README.md ./README.md
 
 # Install package in runtime (without dev dependencies)
-RUN pip install --no-cache-dir --no-deps -e .
+RUN pip install --no-cache-dir --no-deps --no-build-isolation .
 
 # Create data directory for persistence
 RUN mkdir -p /home/appuser/.agent_memory && chown -R appuser:appuser /home/appuser
