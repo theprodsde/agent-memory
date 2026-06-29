@@ -484,7 +484,7 @@ git push origin --delete v0.1.3
 
 ---
 
-## 📈 Current Status (v0.1.2)
+## 📈 Current Status (v0.1.4)
 
 ### ✅ Implemented
 - Hybrid retrieval (BM25 + Vector + RRF fusion)
